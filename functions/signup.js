@@ -1,58 +1,23 @@
-import React, { useState } from "react";
+const fs = require("fs");
+const bcrypt = require("bcryptjs");
 
-const Signup = () => {
-  const [formData, setFormData] = useState({ name: "", email: "", password: "" });
+exports.handler = async (event) => {
+  const { name, email, password } = JSON.parse(event.body);
+  const users = JSON.parse(fs.readFileSync("./db/users.json", "utf-8"));
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const response = await fetch("/.netlify/functions/signup", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(formData),
-    });
+  if (users.some((u) => u.email === email)) {
+    return {
+      statusCode: 400,
+      body: JSON.stringify({ success: false, message: "User already exists" }),
+    };
+  }
 
-    const data = await response.json();
-    if (data.success) {
-      alert("Account created! You can now log in.");
-      window.location.href = "/";
-    } else {
-      alert(data.message);
-    }
+  const hashedPassword = await bcrypt.hash(password, 10);
+  users.push({ name, email, password: hashedPassword, role: "student" });
+  fs.writeFileSync("./db/users.json", JSON.stringify(users, null, 2));
+
+  return {
+    statusCode: 201,
+    body: JSON.stringify({ success: true, message: "User registered successfully" }),
   };
-
-  return (
-    <form onSubmit={handleSubmit}>
-      <h1>Sign Up</h1>
-      <label>
-        Name:
-        <input
-          type="text"
-          value={formData.name}
-          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-          required
-        />
-      </label>
-      <label>
-        Email:
-        <input
-          type="email"
-          value={formData.email}
-          onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-          required
-        />
-      </label>
-      <label>
-        Password:
-        <input
-          type="password"
-          value={formData.password}
-          onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-          required
-        />
-      </label>
-      <button type="submit">Sign Up</button>
-    </form>
-  );
 };
-
-export default Signup;
