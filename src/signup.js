@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 
-const Login = () => {
-  const [formData, setFormData] = useState({ email: "", password: "" });
+const Signup = () => {
+  const [formData, setFormData] = useState({ name: "", email: "", password: "" });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const response = await fetch("/.netlify/functions/login", {
+    const response = await fetch("/.netlify/functions/signup", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(formData),
@@ -13,8 +13,8 @@ const Login = () => {
 
     const data = await response.json();
     if (data.success) {
-      localStorage.setItem("token", data.token);
-      window.location.href = "/form"; // Redirect after login
+      alert("Account created! You can now log in.");
+      window.location.href = "/";
     } else {
       alert(data.message);
     }
@@ -22,7 +22,16 @@ const Login = () => {
 
   return (
     <form onSubmit={handleSubmit}>
-      <h1>Login</h1>
+      <h1>Sign Up</h1>
+      <label>
+        Name:
+        <input
+          type="text"
+          value={formData.name}
+          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+          required
+        />
+      </label>
       <label>
         Email:
         <input
@@ -41,9 +50,9 @@ const Login = () => {
           required
         />
       </label>
-      <button type="submit">Login</button>
+      <button type="submit">Sign Up</button>
     </form>
   );
 };
 
-export default Login;
+export default Signup;

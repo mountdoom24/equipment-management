@@ -4,7 +4,7 @@ import Login from "./Login";
 import Signup from "./Signup";
 import Form from "./Form";
 import TeacherDashboard from "./TeacherDashboard";
-import Dashboard from "./Dashboard"; // Employee dashboard
+import Dashboard from "./Dashboard";
 
 const App = () => {
   const isAuthenticated = localStorage.getItem("token");
