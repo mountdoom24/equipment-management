@@ -1,18 +1,41 @@
 import React from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Login from "./login";
-import Dashboard from "./dashboard";
-import Form from "./form";
-import AdminPanel from "./AdminPanel";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import Login from "./Login";
+import Signup from "./Signup";
+import Form from "./Form";
+import TeacherDashboard from "./TeacherDashboard";
+import Dashboard from "./Dashboard"; // Employee dashboard
 
 const App = () => {
+  const isAuthenticated = localStorage.getItem("token");
+  const userRole = isAuthenticated
+    ? JSON.parse(atob(localStorage.getItem("token").split(".")[1])).role
+    : null;
+
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<Login />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/form" element={<Form />} />
-        <Route path="/admin" element={<AdminPanel />} />
+        {/* Public Routes */}
+        <Route path="/" element={!isAuthenticated ? <Login /> : <Navigate to="/form" />} />
+        <Route path="/signup" element={!isAuthenticated ? <Signup /> : <Navigate to="/form" />} />
+
+        {/* Private Routes */}
+        <Route
+          path="/form"
+          element={isAuthenticated ? <Form /> : <Navigate to="/" />}
+        />
+        <Route
+          path="/teacher-dashboard"
+          element={
+            isAuthenticated && userRole === "teacher" ? <TeacherDashboard /> : <Navigate to="/" />
+          }
+        />
+        <Route
+          path="/dashboard"
+          element={
+            isAuthenticated && userRole === "employee" ? <Dashboard /> : <Navigate to="/" />
+          }
+        />
       </Routes>
     </Router>
   );
