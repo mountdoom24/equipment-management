@@ -1,0 +1,25 @@
+{
+    "name": "equipment-management",
+    "version": "1.0.0",
+    "description": "A fully online equipment management system built on Netlify.",
+    "main": "src/App.js",
+    "scripts": {
+      "start": "react-scripts start",
+      "build": "react-scripts build",
+      "test": "react-scripts test",
+      "eject": "react-scripts eject"
+    },
+    "dependencies": {
+      "bcryptjs": "^2.4.3",
+      "jsonwebtoken": "^8.5.1",
+      "react": "^18.0.0",
+      "react-dom": "^18.0.0",
+      "react-router-dom": "^6.11.2"
+    },
+    "devDependencies": {
+      "netlify-cli": "^12.0.0"
+    },
+    "keywords": ["equipment", "management", "Netlify"],
+    "author": "Your Name",
+    "license": "MIT"
+  }
