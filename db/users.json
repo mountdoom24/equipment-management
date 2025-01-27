@@ -1,1 +1,5 @@
-[]
+[
+    { "email": "student1@example.com", "password": "$2a$10$hashedPassword", "role": "student" },
+    { "email": "employee1@example.com", "password": "$2a$10$hashedPassword", "role": "employee" },
+    { "email": "teacher1@example.com", "password": "$2a$10$hashedPassword", "role": "teacher" }
+  ]
