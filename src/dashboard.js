@@ -1,45 +1,31 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const Dashboard = () => {
-  const [forms, setForms] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [role, setRole] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchForms = async () => {
-      const token = localStorage.getItem("token");
-      const response = await fetch("/.netlify/functions/fetchData", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      const data = await response.json();
-      setForms(data.forms);
-      setLoading(false);
-    };
+    const token = localStorage.getItem("token");
 
-    fetchForms();
-  }, []);
+    if (!token) {
+      alert("You must log in to access the dashboard.");
+      navigate("/"); // Redirect to login
+    } else {
+      const userRole = JSON.parse(atob(token.split(".")[1])).role; // Decode JWT to get role
+      setRole(userRole);
+    }
+  }, [navigate]);
 
-  const logout = () => {
-    localStorage.removeItem("token");
-    window.location.href = "/";
-  };
+  if (role === "student") {
+    return <h1>Access Denied: Students cannot view dashboards.</h1>;
+  }
 
   return (
     <div>
       <h1>Dashboard</h1>
-      <button onClick={logout}>Logout</button>
-      {loading ? (
-        <p>Loading...</p>
-      ) : (
-        <ul>
-          {forms.map((form) => (
-            <li key={form.id}>
-              <p>Equipment: {form.equipment.join(", ")}</p>
-              <p>Status: {form.status}</p>
-              <p>Due Date: {form.dueDate}</p>
-            </li>
-          ))}
-        </ul>
-      )}
+      {role === "employee" && <p>Welcome to the Employee Dashboard.</p>}
+      {role === "teacher" && <p>Welcome to the Teacher Dashboard.</p>}
     </div>
   );
 };

@@ -1,21 +1,33 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const Form = () => {
-  const [equipment, setEquipment] = useState("");
-  const [dueDate, setDueDate] = useState("");
-  const [comments, setComments] = useState("");
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      alert("You must log in to access the form.");
+      navigate("/"); // Redirect to login
+    } else {
+      setIsLoggedIn(true);
+    }
+  }, [navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const token = localStorage.getItem("token");
-
     const response = await fetch("/.netlify/functions/submitForm", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
       },
-      body: JSON.stringify({ equipment, dueDate, comments }),
+      body: JSON.stringify({
+        equipment: "Camera", // Example, update as needed
+        dueDate: "2025-02-01",
+        comments: "No comments",
+      }),
     });
 
     const data = await response.json();
@@ -27,35 +39,12 @@ const Form = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <h1>Equipment Checkout Form</h1>
-      <label>
-        Equipment Requested:
-        <input
-          type="text"
-          value={equipment}
-          onChange={(e) => setEquipment(e.target.value)}
-          required
-        />
-      </label>
-      <label>
-        Due Date:
-        <input
-          type="date"
-          value={dueDate}
-          onChange={(e) => setDueDate(e.target.value)}
-          required
-        />
-      </label>
-      <label>
-        Additional Comments:
-        <textarea
-          value={comments}
-          onChange={(e) => setComments(e.target.value)}
-        />
-      </label>
-      <button type="submit">Submit</button>
-    </form>
+    isLoggedIn && (
+      <form onSubmit={handleSubmit}>
+        <h1>Equipment Checkout Form</h1>
+        <button type="submit">Submit Form</button>
+      </form>
+    )
   );
 };
 
