@@ -4,38 +4,18 @@ import Login from "./Login";
 import Signup from "./Signup";
 import Form from "./Form";
 import TeacherDashboard from "./TeacherDashboard";
-import Dashboard from "./Dashboard";
+import EmployeeDashboard from "./EmployeeDashboard";
+import ProtectedRoute from "./ProtectedRoute";
 
 const App = () => {
-  const isAuthenticated = localStorage.getItem("token");
-  const userRole = isAuthenticated
-    ? JSON.parse(atob(localStorage.getItem("token").split(".")[1])).role
-    : null;
-
   return (
     <Router>
       <Routes>
-        {/* Public Routes */}
-        <Route path="/" element={!isAuthenticated ? <Login /> : <Navigate to="/form" />} />
-        <Route path="/signup" element={!isAuthenticated ? <Signup /> : <Navigate to="/form" />} />
-
-        {/* Private Routes */}
-        <Route
-          path="/form"
-          element={isAuthenticated ? <Form /> : <Navigate to="/" />}
-        />
-        <Route
-          path="/teacher-dashboard"
-          element={
-            isAuthenticated && userRole === "teacher" ? <TeacherDashboard /> : <Navigate to="/" />
-          }
-        />
-        <Route
-          path="/dashboard"
-          element={
-            isAuthenticated && userRole === "employee" ? <Dashboard /> : <Navigate to="/" />
-          }
-        />
+        <Route path="/" element={<Login />} />
+        <Route path="/signup" element={<Signup />} />
+        <Route path="/form" element={<ProtectedRoute role="student"><Form /></ProtectedRoute>} />
+        <Route path="/teacher-dashboard" element={<ProtectedRoute role="teacher"><TeacherDashboard /></ProtectedRoute>} />
+        <Route path="/employee-dashboard" element={<ProtectedRoute role="employee"><EmployeeDashboard /></ProtectedRoute>} />
       </Routes>
     </Router>
   );

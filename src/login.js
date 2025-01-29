@@ -1,20 +1,21 @@
 import React, { useState } from "react";
 
 const Login = () => {
-  const [formData, setFormData] = useState({ email: "", password: "" });
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     const response = await fetch("/.netlify/functions/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(formData),
+      body: JSON.stringify({ email, password }),
     });
 
     const data = await response.json();
     if (data.success) {
       localStorage.setItem("token", data.token);
-      window.location.href = "/form"; // Redirect after login
+      window.location.href = "/form";
     } else {
       alert(data.message);
     }
@@ -23,24 +24,8 @@ const Login = () => {
   return (
     <form onSubmit={handleSubmit}>
       <h1>Login</h1>
-      <label>
-        Email:
-        <input
-          type="email"
-          value={formData.email}
-          onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-          required
-        />
-      </label>
-      <label>
-        Password:
-        <input
-          type="password"
-          value={formData.password}
-          onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-          required
-        />
-      </label>
+      <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+      <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} required />
       <button type="submit">Login</button>
     </form>
   );
